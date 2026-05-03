@@ -4,8 +4,9 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
-  "forwardPorts": [7000, 7001, 7002, 7003, 7004, 7005, 5341],
+  "forwardPorts": [4200, 7000, 7001, 7002, 7003, 7004, 7005, 5341],
   "portsAttributes": {
+    "4200": { "label": "Angular App" },
     "7000": { "label": "BFF API" },
     "7001": { "label": "Product API" },
     "7002": { "label": "Order API" },

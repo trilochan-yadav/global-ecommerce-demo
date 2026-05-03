@@ -23,6 +23,7 @@
 | Shipping.API | http://localhost:7004 | http://localhost:7004/swagger | `shipping-api-key-123` |
 | Analytics.API | http://localhost:7005 | http://localhost:7005/swagger | `analytics-api-key-123` |
 | Seq (log viewer) | http://localhost:5341 | — | — |
+| Angular App | http://localhost:4200 | — | — |
 
 > **HTTP not HTTPS** — containers run on `http://+:80` internally. This is correct Docker behaviour; HTTPS is handled at the reverse proxy layer in production.
 
@@ -72,8 +73,9 @@ docker-compose down
    ```bash
    docker-compose up --build
    ```
-4. Click the **Ports** tab — all services + Seq appear with friendly labels  
-   URLs follow the pattern: `https://your-codespace-name-7000.app.github.dev`
+4. Click the **Ports** tab — all services, Seq and Angular appear with friendly labels  
+   URLs follow the pattern: `https://your-codespace-name-7000.app.github.dev`  
+   Angular is on port **4200**: `https://your-codespace-name-4200.app.github.dev`
 
 > First build inside Codespaces takes ~5–8 minutes (DinD overhead). Subsequent runs are fast.  
 > Codespaces gives **60 free hours/month** on the free tier.
@@ -150,7 +152,10 @@ Wait ~10 seconds — services connect to Seq after startup. If logs still don't 
 
 ## Angular Frontend (optional)
 
-> Requires Node.js 18+ on your host machine. The Angular dev server is not containerised — it proxies to the BFF container at `http://localhost:7000`.
+**Docker / Codespaces** — Angular is already containerised and included in `docker-compose.yml`. No Node.js needed.
+Just run `docker-compose up --build` and open **http://localhost:4200** (or the forwarded Codespaces URL for port 4200).
+
+**Local dev server (host machine only)** — requires Node.js 18+. Proxies to the BFF container at `http://localhost:7000`.
 
 ```powershell
 # Start the .NET services first

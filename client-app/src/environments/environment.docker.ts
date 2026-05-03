@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  bffBaseUrl: 'http://localhost:7000',
+  bffBaseUrl: '', // empty = relative URL, nginx proxies /api to bff:80 internally
 };
