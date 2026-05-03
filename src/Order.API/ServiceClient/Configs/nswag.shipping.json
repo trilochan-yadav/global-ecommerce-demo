@@ -1,0 +1,19 @@
+{
+  "// Run": "nswag run src/Order.API/ServiceClient/Configs/nswag.shipping.json",
+  "runtime": "Net100",
+  "documentGenerator": {
+    "fromDocument": {
+      "url": "../../../Shipping.API/swagger.json"
+    }
+  },
+  "codeGenerators": {
+    "openApiToCSharpClient": {
+      "namespace": "Order.API.ServiceClient.Shipping",
+      "className": "ShippingApiClient",
+      "injectHttpClient": true,
+      "generateClientInterfaces": true,
+      "generateExceptionClasses": true,
+      "output": "../ShippingApiClient.cs"
+    }
+  }
+}

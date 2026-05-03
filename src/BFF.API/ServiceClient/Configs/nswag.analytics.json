@@ -1,0 +1,19 @@
+{
+  "// Run": "nswag run src/BFF.API/ServiceClient/Configs/nswag.analytics.json",
+  "runtime": "Net100",
+  "documentGenerator": {
+    "fromDocument": {
+      "url": "../../../Analytics.API/swagger.json"
+    }
+  },
+  "codeGenerators": {
+    "openApiToCSharpClient": {
+      "namespace": "BFF.API.ServiceClient.Analytics",
+      "className": "AnalyticsApiClient",
+      "injectHttpClient": true,
+      "generateClientInterfaces": true,
+      "generateExceptionClasses": true,
+      "output": "../AnalyticsApiClient.cs"
+    }
+  }
+}

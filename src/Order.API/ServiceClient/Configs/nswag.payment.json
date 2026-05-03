@@ -1,0 +1,19 @@
+{
+  "// Run": "nswag run src/Order.API/ServiceClient/Configs/nswag.payment.json",
+  "runtime": "Net100",
+  "documentGenerator": {
+    "fromDocument": {
+      "url": "../../../Payment.API/swagger.json"
+    }
+  },
+  "codeGenerators": {
+    "openApiToCSharpClient": {
+      "namespace": "Order.API.ServiceClient.Payment",
+      "className": "PaymentApiClient",
+      "injectHttpClient": true,
+      "generateClientInterfaces": true,
+      "generateExceptionClasses": true,
+      "output": "../PaymentApiClient.cs"
+    }
+  }
+}

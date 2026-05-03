@@ -1,0 +1,155 @@
+version: "3.9"
+
+services:
+
+  product:
+    build:
+      context: .
+      dockerfile: src/Product.API/Dockerfile
+    ports:
+      - "7001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - Serilog__WriteTo__0__Args__path=/logs/ProductAPI-.log
+      - Serilog__WriteTo__1__Args__serverUrl=http://seq:80
+    volumes:
+      - ./docker-volumes/logs:/logs
+    networks:
+      - ecommerce-net
+    depends_on:
+      - seq
+
+  payment:
+    build:
+      context: .
+      dockerfile: src/Payment.API/Dockerfile
+    ports:
+      - "7003:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - Serilog__WriteTo__0__Args__path=/logs/PaymentAPI-.log
+      - Serilog__WriteTo__1__Args__serverUrl=http://seq:80
+    volumes:
+      - ./docker-volumes/logs:/logs
+    networks:
+      - ecommerce-net
+    depends_on:
+      - seq
+
+  shipping:
+    build:
+      context: .
+      dockerfile: src/Shipping.API/Dockerfile
+    ports:
+      - "7004:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - Serilog__WriteTo__0__Args__path=/logs/ShippingAPI-.log
+      - Serilog__WriteTo__1__Args__serverUrl=http://seq:80
+    volumes:
+      - ./docker-volumes/logs:/logs
+    networks:
+      - ecommerce-net
+    depends_on:
+      - seq
+
+  analytics:
+    build:
+      context: .
+      dockerfile: src/Analytics.API/Dockerfile
+    ports:
+      - "7005:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - Serilog__WriteTo__0__Args__path=/logs/AnalyticsAPI-.log
+      - Serilog__WriteTo__1__Args__serverUrl=http://seq:80
+    volumes:
+      - ./docker-volumes/logs:/logs
+    networks:
+      - ecommerce-net
+    depends_on:
+      - seq
+
+  order:
+    build:
+      context: .
+      dockerfile: src/Order.API/Dockerfile
+    ports:
+      - "7002:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - Services__ProductApi__BaseUrl=http://product:80
+      - Services__PaymentApi__BaseUrl=http://payment:80
+      - Services__ShippingApi__BaseUrl=http://shipping:80
+      - Services__AnalyticsApi__BaseUrl=http://analytics:80
+      - Services__BffApi__BaseUrl=http://bff:80
+      - Serilog__WriteTo__0__Args__path=/logs/OrderAPI-.log
+      - Serilog__WriteTo__1__Args__serverUrl=http://seq:80
+    volumes:
+      - ./docker-volumes/logs:/logs
+      - ./docker-volumes/dlq:/app/dlq
+    networks:
+      - ecommerce-net
+    depends_on:
+      - product
+      - payment
+      - shipping
+      - analytics
+      - seq
+
+  bff:
+    build:
+      context: .
+      dockerfile: src/BFF.API/Dockerfile
+    ports:
+      - "7000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - Services__ProductApi__BaseUrl=http://product:80
+      - Services__PaymentApi__BaseUrl=http://payment:80
+      - Services__ShippingApi__BaseUrl=http://shipping:80
+      - Services__AnalyticsApi__BaseUrl=http://analytics:80
+      - Services__OrderApi__BaseUrl=http://order:80
+      - Serilog__WriteTo__0__Args__path=/logs/BFFAPI-.log
+      - Serilog__WriteTo__1__Args__serverUrl=http://seq:80
+    volumes:
+      - ./docker-volumes/logs:/logs
+    networks:
+      - ecommerce-net
+    depends_on:
+      - product
+      - payment
+      - shipping
+      - analytics
+      - order
+      - seq
+
+  angular:
+    build:
+      context: ./client-app
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    networks:
+      - ecommerce-net
+    depends_on:
+      - bff
+
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5341:80"
+    environment:
+      - ACCEPT_EULA=Y
+    networks:
+      - ecommerce-net
+
+networks:
+  ecommerce-net:
+    driver: bridge

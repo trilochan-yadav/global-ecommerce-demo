@@ -1,0 +1,12 @@
+{
+  "// Description": "Master meta-config listing all NSwag clients for Order.API.",
+  "// Generate all": "Get-ChildItem src/Order.API/ServiceClient/Configs/nswag.*.json | Where-Object Name -ne 'nswag.all.json' | ForEach-Object { nswag run $_.FullName }",
+  "service": "Order.API",
+  "clients": [
+    { "name": "Product",   "config": "nswag.product.json" },
+    { "name": "Payment",   "config": "nswag.payment.json" },
+    { "name": "Shipping",  "config": "nswag.shipping.json" },
+    { "name": "Analytics", "config": "nswag.analytics.json" },
+    { "name": "Bff",       "config": "nswag.bff.json" }
+  ]
+}

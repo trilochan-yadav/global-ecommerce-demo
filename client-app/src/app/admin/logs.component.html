@@ -1,0 +1,49 @@
+<div class="container py-4">
+  <h3 class="mb-4">Service Logs — Admin</h3>
+
+  <div class="row g-2 mb-3 align-items-end">
+    <div class="col-auto">
+      <label class="form-label mb-0">Service</label>
+      <select
+        class="form-select form-select-sm"
+        [value]="selectedService()"
+        (change)="selectedService.set($any($event.target).value)"
+        style="width: 160px"
+      >
+        @for (s of services; track s) {
+          <option [value]="s">{{ s }}</option>
+        }
+      </select>
+    </div>
+    <div class="col-auto">
+      <label class="form-label mb-0">Lines</label>
+      <input
+        type="number"
+        class="form-control form-control-sm"
+        [value]="lines()"
+        (input)="lines.set(+$any($event.target).value)"
+        min="10"
+        max="500"
+        style="width: 80px"
+      />
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-sm btn-primary" (click)="load()" [disabled]="loading()">
+        {{ loading() ? 'Loading…' : 'Refresh' }}
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-danger py-2">{{ error() }}</div>
+  }
+
+  <div class="bg-dark rounded p-3 log-viewer">
+    @for (line of logLines(); track $index) {
+      <div [class]="lineClass(line)">{{ line }}</div>
+    }
+    @if (!logLines().length && !loading()) {
+      <div class="text-muted">No log entries.</div>
+    }
+  </div>
+</div>

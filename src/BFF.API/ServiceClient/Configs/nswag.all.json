@@ -1,0 +1,11 @@
+{
+  "// Description": "Master meta-config listing all NSwag clients for BFF.API.",
+  "// Note": "OrderApiClient will be added here after Order.API is built (Phase 4).",
+  "// Generate all": "Get-ChildItem src/BFF.API/ServiceClient/Configs/nswag.*.json | Where-Object Name -ne 'nswag.all.json' | ForEach-Object { nswag run $_.FullName }",
+  "service": "BFF.API",
+  "clients": [
+    { "name": "Product",   "config": "nswag.product.json" },
+    { "name": "Analytics", "config": "nswag.analytics.json" },
+    { "name": "Order",     "config": "nswag.order.json" }
+  ]
+}

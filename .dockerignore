@@ -1,0 +1,33 @@
+# Build output
+**/bin/
+**/obj/
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+# Logs and DLQ (runtime artefacts)
+logs/
+dlq/
+docker-volumes/
+
+# NSwag / Swagger generated files
+**/swagger.json
+**/swagger.Notification.json
+
+# VS / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+out-tsc/
+
+# Git
+.git/
+.gitignore

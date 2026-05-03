@@ -1,0 +1,43 @@
+<div class="container py-4">
+  <h3 class="mb-4">Products</h3>
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+    </div>
+  } @else {
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      @for (p of products(); track p.id) {
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">{{ p.name }}</h5>
+              <p class="card-text text-muted small">{{ p.description }}</p>
+              <p class="card-text fw-bold">{{ p.price | number: '1.2-2' }}</p>
+              <span
+                class="badge"
+                [class.bg-success]="p.stockQuantity > 0"
+                [class.bg-secondary]="p.stockQuantity === 0"
+              >
+                {{ p.stockQuantity > 0 ? p.stockQuantity + ' in stock' : 'Out of stock' }}
+              </span>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+              <button
+                class="btn btn-primary btn-sm w-100"
+                [disabled]="p.stockQuantity === 0"
+                (click)="buy(p.id)"
+              >
+                Buy
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
