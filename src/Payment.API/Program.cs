@@ -1,8 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using Payment.API.Business.Exceptions;
 using Payment.API.Business.Implementations;
 using Payment.API.Business.Interfaces;
 using Payment.API.Data;
 using Payment.API.Data.Repositories;
+using Polly;
+using Polly.CircuitBreaker;
+using Polly.Retry;
 using Serilog;
 using Shared;
 
@@ -39,6 +43,36 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+
+// Singleton so circuit breaker state is shared across all requests
+builder.Services.AddSingleton<ResiliencePipeline>(sp =>
+{
+    var logger = sp.GetRequiredService<ILogger<PaymentService>>();
+    return new ResiliencePipelineBuilder()
+        .AddRetry(new RetryStrategyOptions
+        {
+            ShouldHandle = new PredicateBuilder().Handle<PaymentDeclinedException>(),
+            MaxRetryAttempts = 1,
+            Delay = TimeSpan.FromSeconds(5),
+            BackoffType = DelayBackoffType.Constant,
+            OnRetry = args =>
+            {
+                logger.LogWarning("Retry {Attempt} for payment after {Delay}s due to: {Message}",
+                    args.AttemptNumber, args.RetryDelay.TotalSeconds, args.Outcome.Exception?.Message);
+                return ValueTask.CompletedTask;
+            }
+        })
+        .AddCircuitBreaker(new CircuitBreakerStrategyOptions
+        {
+            ShouldHandle = new PredicateBuilder().Handle<PaymentDeclinedException>(),
+            FailureRatio = 0.5,
+            MinimumThroughput = 2,
+            SamplingDuration = TimeSpan.FromSeconds(30),
+            BreakDuration = TimeSpan.FromSeconds(30)
+        })
+        .Build();
+});
+
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 var app = builder.Build();

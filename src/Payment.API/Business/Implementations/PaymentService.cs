@@ -5,7 +5,6 @@ using Payment.API.Data.Repositories;
 using Payment.API.Models;
 using Polly;
 using Polly.CircuitBreaker;
-using Polly.Retry;
 using Shared;
 
 namespace Payment.API.Business.Implementations;
@@ -16,34 +15,11 @@ public class PaymentService : IPaymentService
     private readonly ResiliencePipeline _pipeline;
     private readonly ILogger<PaymentService> _logger;
 
-    public PaymentService(IPaymentRepository repo, ILogger<PaymentService> logger)
+    public PaymentService(IPaymentRepository repo, ILogger<PaymentService> logger, ResiliencePipeline pipeline)
     {
         _repo = repo;
         _logger = logger;
-
-        _pipeline = new ResiliencePipelineBuilder()
-            .AddRetry(new RetryStrategyOptions
-            {
-                ShouldHandle = new PredicateBuilder().Handle<PaymentDeclinedException>(),
-                MaxRetryAttempts = 1,
-                Delay = TimeSpan.FromSeconds(5),
-                BackoffType = DelayBackoffType.Constant,
-                OnRetry = args =>
-                {
-                    logger.LogWarning("Retry {Attempt} for payment after {Delay}s due to: {Message}",
-                        args.AttemptNumber, args.RetryDelay.TotalSeconds, args.Outcome.Exception?.Message);
-                    return ValueTask.CompletedTask;
-                }
-            })
-            .AddCircuitBreaker(new CircuitBreakerStrategyOptions
-            {
-                ShouldHandle = new PredicateBuilder().Handle<PaymentDeclinedException>(),
-                FailureRatio = 0.01,
-                MinimumThroughput = 2,
-                SamplingDuration = TimeSpan.FromSeconds(30),
-                BreakDuration = TimeSpan.FromSeconds(30)
-            })
-            .Build();
+        _pipeline = pipeline;
     }
 
     public async Task<PaymentDto> ProcessAsync(ProcessPaymentRequest request)
