@@ -52,13 +52,13 @@ builder.Services.AddSingleton<ResiliencePipeline>(sp =>
         .AddRetry(new RetryStrategyOptions
         {
             ShouldHandle = new PredicateBuilder().Handle<PaymentDeclinedException>(),
-            MaxRetryAttempts = 1,
-            Delay = TimeSpan.FromSeconds(5),
+            MaxRetryAttempts = 2,
+            Delay = TimeSpan.FromSeconds(2),
             BackoffType = DelayBackoffType.Constant,
             OnRetry = args =>
             {
                 logger.LogWarning("Retry {Attempt} for payment after {Delay}s due to: {Message}",
-                    args.AttemptNumber, args.RetryDelay.TotalSeconds, args.Outcome.Exception?.Message);
+                    args.AttemptNumber+1, args.RetryDelay.TotalSeconds, args.Outcome.Exception?.Message);
                 return ValueTask.CompletedTask;
             }
         })
@@ -66,7 +66,7 @@ builder.Services.AddSingleton<ResiliencePipeline>(sp =>
         {
             ShouldHandle = new PredicateBuilder().Handle<PaymentDeclinedException>(),
             FailureRatio = 0.5,
-            MinimumThroughput = 2,
+            MinimumThroughput = 3,
             SamplingDuration = TimeSpan.FromSeconds(30),
             BreakDuration = TimeSpan.FromSeconds(30)
         })

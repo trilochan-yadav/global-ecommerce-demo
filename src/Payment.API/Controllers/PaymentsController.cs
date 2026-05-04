@@ -26,7 +26,7 @@ public class PaymentsController(IPaymentService service, ILogger<PaymentsControl
         }
         catch (PaymentDeclinedException ex)
         {
-            _logger.LogWarning("Payment declined for order {OrderId}: {Message}", request.OrderId, ex.Message);
+            _logger.LogWarning("Payment failed for order {OrderId}", request.OrderId);
             return StatusCode(402, ApiResponse<PaymentDto>.Fail(ex.Message));
         }
         catch (InvalidOperationException ex)
