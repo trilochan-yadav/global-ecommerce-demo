@@ -38,8 +38,8 @@ public class PaymentService : IPaymentService
             .AddCircuitBreaker(new CircuitBreakerStrategyOptions
             {
                 ShouldHandle = new PredicateBuilder().Handle<PaymentDeclinedException>(),
-                FailureRatio = 0.5,
-                MinimumThroughput = 1,
+                FailureRatio = 0.01,
+                MinimumThroughput = 2,
                 SamplingDuration = TimeSpan.FromSeconds(30),
                 BreakDuration = TimeSpan.FromSeconds(30)
             })
