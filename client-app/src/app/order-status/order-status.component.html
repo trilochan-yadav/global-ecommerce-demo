@@ -1,29 +1,6 @@
 <div class="container py-4">
   <h3 class="mb-4">Orders — Live Status</h3>
 
-  <div class="row g-2 mb-3 align-items-end">
-    <div class="col-auto">
-      <label class="form-label mb-0">Order ID</label>
-      <input
-        type="number"
-        class="form-control form-control-sm"
-        [value]="watchId()"
-        (input)="watchId.set(+$any($event.target).value)"
-        min="1"
-        style="width: 100px"
-      />
-    </div>
-    <div class="col-auto">
-      <button class="btn btn-sm btn-outline-primary" (click)="watch()">Watch</button>
-      <button class="btn btn-sm btn-outline-secondary ms-1" (click)="unwatch()">Unwatch</button>
-    </div>
-    @if (liveStatus()) {
-      <div class="col-12">
-        <span class="badge bg-primary"> Live: Order {{ liveOrderId() }} → {{ liveStatus() }} </span>
-      </div>
-    }
-  </div>
-
   @if (error()) {
     <div class="alert alert-danger">{{ error() }}</div>
   }

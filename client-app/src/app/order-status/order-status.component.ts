@@ -28,17 +28,12 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
   readonly orders = signal<Order[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
-  readonly watchId = signal(1);
-  readonly liveOrderId = signal<number | null>(null);
-  readonly liveStatus = signal('');
 
   private statusSub: Subscription | null = null;
 
   ngOnInit(): void {
     // Subscribe to the hot Observable to keep table in sync
     this.statusSub = this.signalr.orderStatus$.subscribe(({ orderId, status }) => {
-      this.liveOrderId.set(orderId);
-      this.liveStatus.set(status);
       this.orders.update((list) => list.map((o) => (o.id === orderId ? { ...o, status } : o)));
     });
 
@@ -52,23 +47,6 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       },
     });
-  }
-
-  async watch(): Promise<void> {
-    const current = this.liveOrderId();
-    if (current) await this.signalr.leaveOrderGroup(current);
-    this.liveOrderId.set(this.watchId());
-    this.liveStatus.set('');
-    await this.signalr.joinOrderGroup(this.watchId());
-  }
-
-  async unwatch(): Promise<void> {
-    const current = this.liveOrderId();
-    if (current) {
-      await this.signalr.leaveOrderGroup(current);
-      this.liveOrderId.set(null);
-      this.liveStatus.set('');
-    }
   }
 
   badgeClass(status: string): string {
