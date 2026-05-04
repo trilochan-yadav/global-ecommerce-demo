@@ -25,6 +25,7 @@ x86/
 *.suo
 *.userosscache
 *.sln.docstates
+global-ecommerce-demo.sln
 *.rsuser
 Generated\ Files/
 .localhistory/
