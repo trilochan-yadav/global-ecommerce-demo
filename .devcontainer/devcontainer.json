@@ -1,0 +1,14 @@
+{
+  "$schema": "https://containers.dev/api/settings/v1",
+  "name": "Global ECommerce - Dev Container",
+  "configurations": [
+    {
+      "name": "Docker - docker-compose",
+      "devcontainerPath": "docker/devcontainer.json"
+    },
+    {
+      "name": "Local - dotnet run (no Docker)",
+      "devcontainerPath": "local/devcontainer.json"
+    }
+  ]
+}
