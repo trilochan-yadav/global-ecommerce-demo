@@ -45,5 +45,5 @@ Write-Host ""
 Write-Host "Starting Angular SPA..." -ForegroundColor Yellow
 $clientPath = Join-Path $root "client-app"
 Start-Process powershell -ArgumentList "-NoExit", "-Command", `
-    "cd '$clientPath'; Write-Host '--- Angular SPA ---' -ForegroundColor Cyan; ng serve --open"
+    "cd '$clientPath'; if (-not (Test-Path 'node_modules')) { Write-Host 'Installing npm packages...' -ForegroundColor Yellow; npm install }; Write-Host '--- Angular SPA ---' -ForegroundColor Cyan; ng serve --open"
 Write-Host "Angular dev server starting at http://localhost:4200" -ForegroundColor Green
